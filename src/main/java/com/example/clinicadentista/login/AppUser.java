@@ -1,26 +1,26 @@
 package com.example.clinicadentista.login;
 
+
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
 import java.util.Collection;
 import java.util.Collections;
 
-
 @Entity
 public class AppUser implements UserDetails {
-
     @Id
-    @SequenceGenerator(name = "user_sequence" , sequenceName = "user_sequence",allocationSize = 1)
+    @SequenceGenerator(name = "user_sequence",sequenceName = "user_sequence",allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "user_sequence")
     private Long id;
     private String nome;
     private String username;
     private String email;
-    private String password;
-    @Enumerated(EnumType.STRING)
+    private String Password;
+    @Enumerated(EnumType.STRING)//indica que o enum tem um valor string
     private AppUserRoles appUserRoles;
 
     public AppUser() {
@@ -30,7 +30,7 @@ public class AppUser implements UserDetails {
         this.nome = nome;
         this.username = username;
         this.email = email;
-        this.password = password;
+        Password = password;
         this.appUserRoles = appUserRoles;
     }
 
@@ -50,9 +50,48 @@ public class AppUser implements UserDetails {
         this.nome = nome;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        Password = password;
+    }
+
+    public AppUserRoles getAppUserRoles() {
+        return appUserRoles;
+    }
+
+    public void setAppUserRoles(AppUserRoles appUserRoles) {
+        this.appUserRoles = appUserRoles;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        //utiliza esse método para pegar algumas regras do nosso usuário que não vemos
+        //ou seja, elas são passadas no processamento da aplicação
+        SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(appUserRoles.name());
+        //para pegar as regras advindas do nosso appUserRoles e assim eu verifico pelo nome da regra
+
+        return Collections.singleton(grantedAuthority);
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
     @Override
     public String getUsername() {
-        return username;
+        return null;
     }
 
     @Override
@@ -74,43 +113,4 @@ public class AppUser implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(appUserRoles.name());
-
-
-        return Collections.singleton(grantedAuthority);
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public AppUserRoles getAppUserRoles() {
-        return appUserRoles;
-    }
-
-    public void setAppUserRoles(AppUserRoles appUserRoles) {
-        this.appUserRoles = appUserRoles;
-    }
-
-
 }
